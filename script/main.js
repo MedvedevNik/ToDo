@@ -3,29 +3,25 @@ const todoControl = document.querySelector('.todo-control'),
   headerInput = document.querySelector('.header-input'),
   todoList = document.querySelector('.todo-list'),
   todoCompleted = document.querySelector('.todo-completed');
-  localStorage.clear();
 
-let todoData = [];
+  // localStorage.clear();
 
+let todoData = JSON.parse(localStorage.getItem('todo')) || [];
 
-
-const addToStorage = (id) => {
-    localStorage.setItem(id, JSON.stringify(todoData));
+const addToStorage = () => {
+  localStorage.setItem('todo', JSON.stringify(todoData));
 };
 
-const moveToStorage = (id) => {
-  let y = JSON.parse(localStorage.getItem(id));
-  if (y !== null) {
-    for (let i = 0; i < y.lenght; i++) {
-      todoData[i] = y[i];
-    }
-    render()
-  }
+
+const moveToStorage = () => {
+  let y = JSON.parse(localStorage.getItem("todo"));
 }
 
 const render = function() {
   todoList.textContent = '';
   todoCompleted.textContent = '';
+  
+  moveToStorage();
 
   todoData.forEach(function(item){
     const li = document.createElement('li');
@@ -40,12 +36,14 @@ const render = function() {
       todoCompleted.append(li);
     } else {
       todoList.append(li);
+      
     }
     const todoComplete = li.querySelector('.todo-complete'),
       todoRemove = li.querySelector('.todo-remove');
 
     todoComplete.addEventListener('click', function(){
       item.completed = !item.completed;
+      addToStorage();
       render();
     });
     todoRemove.addEventListener('click', function(){
@@ -63,7 +61,6 @@ const render = function() {
       todoData = filtered;
 
       addToStorage();
-      moveToStorage();
       render();
       
     });
@@ -73,15 +70,12 @@ const render = function() {
 
 todoControl.addEventListener('submit', function(event){
   event.preventDefault();
-  const id = `todo${(+new Date()).toString(16)}`;
 
-  addToStorage(id);
-
+  addToStorage();
   if (headerInput.value.trim() === '') {
     headerInput.value = '';
   } else {
     const newTodo = {
-      id: id,
       value: headerInput.value,
       completed: false
     };
@@ -93,3 +87,5 @@ todoControl.addEventListener('submit', function(event){
 });
 
 render();
+
+
